@@ -336,6 +336,12 @@ function renderHall() {
           <span class="hall-tag">选错馆就换轨</span>
           <span class="muted">商标字号侧门 · 版权跨馆门 · 竞争分流台双向直达</span>
         </button>
+        <button type="button" class="menu-btn hall-card hall-punitive-card" data-punitive>
+          <span class="kicker">CITY CARD</span>
+          <strong>惩罚性对照卡</strong>
+          <span class="hall-tag">恶意/故意 × 1～5</span>
+          <span class="muted">商标63 · 专利71 · 版权54 · 反法22（秘密）</span>
+        </button>
       </div>
     </main>
   `;
@@ -356,6 +362,9 @@ function renderHall() {
   });
   app.querySelector("[data-elevators]")?.addEventListener("click", () =>
     navigate({ name: "elevators" })
+  );
+  app.querySelector("[data-punitive]")?.addEventListener("click", () =>
+    navigate({ name: "punitive" })
   );
 }
 
@@ -429,6 +438,11 @@ function renderHome() {
           <strong>跨馆电梯</strong>
           <span class="muted">字号 / 装潢 / 分流台双向换轨</span>
         </button>
+        <button type="button" class="menu-btn" data-go="punitive">
+          <span class="kicker">CITY CARD</span>
+          <strong>惩罚性对照卡</strong>
+          <span class="muted">四馆恶意/故意与一至五倍对照</span>
+        </button>
       </div>
     </main>
     ${dock("home")}
@@ -462,6 +476,9 @@ function renderHome() {
   app.querySelector('[data-go="drill"]')?.addEventListener("click", () => navigate({ name: "drill" }));
   app.querySelector('[data-go="elevators"]')?.addEventListener("click", () =>
     navigate({ name: "elevators" })
+  );
+  app.querySelector('[data-go="punitive"]')?.addEventListener("click", () =>
+    navigate({ name: "punitive" })
   );
   app.querySelector("[data-hall]")?.addEventListener("click", () => {
     stopListen();
@@ -720,6 +737,112 @@ async function renderElevators() {
                 <span class="muted"> · ${e.label}</span>
               </li>`;
             })
+            .join("")}
+        </ul>
+      </section>
+    </main>
+  `;
+
+  app.querySelector("[data-back]").onclick = () => {
+    if (data) navigate({ name: "home" });
+    else navigate({ name: "hall" });
+  };
+  app.querySelectorAll("[data-ride-palace]").forEach((btn) => {
+    btn.onclick = () =>
+      rideElevator(
+        btn.getAttribute("data-ride-palace"),
+        btn.getAttribute("data-ride-room")
+      );
+  });
+}
+
+let cityPunitiveCache = null;
+
+async function loadCityPunitive() {
+  if (cityPunitiveCache) return cityPunitiveCache;
+  const res = await fetch(asset("data/city-punitive.json"));
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  cityPunitiveCache = await res.json();
+  return cityPunitiveCache;
+}
+
+async function renderPunitive() {
+  app.innerHTML = `<main class="app-shell"><p class="empty">正在展开惩罚性对照卡…</p></main>`;
+  let card;
+  try {
+    card = await loadCityPunitive();
+  } catch (err) {
+    app.innerHTML = `
+      <main class="app-shell">
+        <h1>对照卡加载失败</h1>
+        <p class="muted">${String(err)}</p>
+        <button type="button" class="btn btn-primary" data-back style="margin-top:14px">返回</button>
+      </main>`;
+    app.querySelector("[data-back]").onclick = () =>
+      navigate({ name: data ? "home" : "hall" });
+    return;
+  }
+
+  app.innerHTML = `
+    <main class="app-shell">
+      <button type="button" class="back-link" data-back>← ${data ? "馆门" : "选馆"}</button>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">CITY CARD</p>
+          <h1>${card.title}</h1>
+        </div>
+      </header>
+      <p class="hall-motto">${card.motto}</p>
+      <p class="muted">${card.blurb}</p>
+
+      <section class="card" style="margin-top:14px">
+        <label class="eyebrow block-label">共用总闸</label>
+        <ol class="punitive-steps">
+          ${(card.sharedGate?.steps || []).map((s) => `<li>${escapeHtml(s)}</li>`).join("")}
+        </ol>
+        <p class="muted" style="margin-top:10px">情节严重常看：</p>
+        <div class="chip-row">
+          ${(card.sharedGate?.severityTips || [])
+            .map((t) => `<span class="chip">${escapeHtml(t)}</span>`)
+            .join("")}
+        </div>
+      </section>
+
+      <section class="punitive-grid" style="margin-top:14px">
+        ${(card.rows || [])
+          .map(
+            (r) => `
+          <article class="card punitive-row">
+            <p class="eyebrow">${escapeHtml(r.label)} · ${escapeHtml(r.articleLabel)}</p>
+            <h3>${escapeHtml(r.subjective)} × ${escapeHtml(r.multiplier)}</h3>
+            <p><strong>范围</strong> ${escapeHtml(r.scope)} <span class="muted">· ${escapeHtml(r.scopeNote || "")}</span></p>
+            <p><strong>主观</strong> ${escapeHtml(r.subjectiveNote || r.subjective)}</p>
+            <p><strong>基数</strong> ${escapeHtml(r.baseLadder)}</p>
+            <p><strong>法定</strong> ${escapeHtml(r.statutory)}</p>
+            <div class="chip-row" style="margin-top:10px">
+              <button type="button" class="chip chip-elevator" data-ride-palace="${r.palaceId}" data-ride-room="${r.roomId}">
+                ${r.floorHint || ""} ${r.roomId} 赔偿厅
+              </button>
+              ${
+                r.patchRoom
+                  ? `<button type="button" class="chip chip-elevator" data-ride-palace="${r.palaceId}" data-ride-room="${r.patchRoom}">
+                      ${escapeHtml(r.patchHint || r.patchRoom)}
+                    </button>`
+                  : r.patchHint
+                    ? `<span class="chip">${escapeHtml(r.patchHint)}</span>`
+                    : ""
+              }
+            </div>
+          </article>`
+          )
+          .join("")}
+      </section>
+
+      <section class="card" style="margin-top:14px">
+        <label class="eyebrow block-label">五条对照</label>
+        <ul class="punitive-contrast">
+          ${(card.contrastBullets || [])
+            .map((b) => `<li>${escapeHtml(b)}</li>`)
             .join("")}
         </ul>
       </section>
@@ -1455,6 +1578,7 @@ function shuffle(arr) {
 function render() {
   if (route.name === "hall") return renderHall();
   if (route.name === "elevators") return renderElevators();
+  if (route.name === "punitive") return renderPunitive();
   if (!data) {
     app.innerHTML = `<main class="app-shell"><p class="empty">尚未进入馆。请先选馆。</p>
       <button type="button" class="btn btn-primary" data-to-hall style="margin-top:14px">去选馆</button></main>`;

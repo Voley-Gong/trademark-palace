@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "title": "知产诉讼城 · 惩罚性四馆对照卡",
+  "motto": "故意（或恶意）+ 情节严重 → 基数 × 1～5 倍",
+  "blurb": "四馆惩罚性都是「主观 + 情节严重 + 一至五倍」，但主观用词、适用行为范围和法定赔偿区间不同。办案先对号入座，再分两组证据：主观事实 / 严重情节。",
+  "sharedGate": {
+    "steps": [
+      "先定普通赔偿基数（损失 / 获利 / 许可费等）",
+      "再证主观要件（恶意或故意）",
+      "再证情节严重",
+      "在基数上一倍以上五倍以下裁量",
+      "合理开支另计；账簿举证妨碍可抬基数或情节"
+    ],
+    "severityTips": [
+      "重复侵权、规模化侵权",
+      "隐匿伪造账簿、拒不披露",
+      "以侵权为业、持续时间长",
+      "假冒/盗版影响大、获利巨大"
+    ]
+  },
+  "rows": [
+    {
+      "palaceId": "trademark",
+      "label": "商标馆",
+      "article": "63",
+      "articleLabel": "商标法 §63",
+      "subjective": "恶意",
+      "subjectiveNote": "法条用「恶意」，不是「故意」",
+      "scope": "侵犯商标专用权",
+      "scopeNote": "一般商标侵权均可评估，不限假冒一类",
+      "multiplier": "1～5 倍",
+      "baseLadder": "实际损失 → 侵权获利 → 许可费倍数",
+      "statutory": "均难确定：五百万元以下",
+      "roomId": "F3",
+      "floorHint": "4F",
+      "patchRoom": "B4",
+      "patchHint": "B0 惩罚性补丁"
+    },
+    {
+      "palaceId": "patent",
+      "label": "专利馆",
+      "article": "71",
+      "articleLabel": "专利法 §71",
+      "subjective": "故意",
+      "subjectiveNote": "法条用「故意」",
+      "scope": "侵犯专利权",
+      "scopeNote": "发明 / 实用新型 / 外观设计侵权",
+      "multiplier": "1～5 倍",
+      "baseLadder": "实际损失或侵权获利 → 许可费倍数",
+      "statutory": "均难确定：三万元以上五百万元以下",
+      "roomId": "F3",
+      "floorHint": "4F",
+      "patchRoom": "B8",
+      "patchHint": "B0 赔偿保全补丁"
+    },
+    {
+      "palaceId": "copyright",
+      "label": "著作权馆",
+      "article": "54",
+      "articleLabel": "著作权法 §54",
+      "subjective": "故意",
+      "subjectiveNote": "故意侵犯著作权或与著作权有关的权利",
+      "scope": "著作权 + 邻接权等",
+      "scopeNote": "含与著作权有关的权利",
+      "multiplier": "1～5 倍",
+      "baseLadder": "实际损失或违法所得 → 权利使用费",
+      "statutory": "均难确定：五百元以上五百万元以下",
+      "roomId": "F3",
+      "floorHint": "4F",
+      "patchRoom": "B13",
+      "patchHint": "B0 赔偿补丁"
+    },
+    {
+      "palaceId": "competition",
+      "label": "竞争与秘密馆",
+      "article": "22",
+      "articleLabel": "反法 §22（2025）",
+      "subjective": "故意",
+      "subjectiveNote": "故意实施侵犯商业秘密",
+      "scope": "仅商业秘密",
+      "scopeNote": "混淆、虚假宣传等一般不走本条惩罚性；法定赔偿可覆盖混淆与秘密",
+      "multiplier": "1～5 倍",
+      "baseLadder": "实际损失或侵权获利",
+      "statutory": "违反 §7 / §10 且损利难定：五百万元以下",
+      "roomId": "F2",
+      "floorHint": "4F",
+      "patchRoom": null,
+      "patchHint": "秘密廊 S2→F2"
+    }
+  ],
+  "contrastBullets": [
+    "主观用词：商标＝恶意；专利 / 版权 / 秘密＝故意",
+    "范围最窄：竞争馆惩罚性目前主要钉商业秘密",
+    "基数用词：版权常用「违法所得」；商标 / 专利 / 反法多用「侵权获利」",
+    "法定区间下限：专利有三万元底；版权有五百元底；商标与反法多为五百万元以下酌定",
+    "证据两组写：主观一组 + 情节严重一组，不要混成「很坏」一句话"
+  ]
+}

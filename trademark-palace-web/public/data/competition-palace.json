@@ -1764,7 +1764,14 @@
               "takeaway": "惩罚性仍主要锚定商业秘密；用词是故意。"
             }
           ],
-          "exceptions": []
+          "exceptions": [],
+          "sideNotes": [
+            {
+              "id": "city-punitive",
+              "article": "punitive",
+              "oneLiner": "四馆惩罚性对照：选馆页「惩罚性对照卡」· 故意/恶意+情节严重×1～5"
+            }
+          ]
         },
         {
           "id": "F3",
