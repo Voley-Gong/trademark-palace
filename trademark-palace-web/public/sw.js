@@ -1,5 +1,5 @@
 /* Trademark palace PWA service worker */
-const CACHE = "ip-palace-v9";
+const CACHE = "ip-palace-v10";
 const PRECACHE = [
   "./",
   "./index.html",
