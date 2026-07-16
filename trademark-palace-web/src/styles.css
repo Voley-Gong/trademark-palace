@@ -147,6 +147,17 @@ button {
   border-color: rgba(180, 90, 70, 0.4);
 }
 
+.hall-platform-card {
+  border-style: dashed;
+  border-color: rgba(70, 120, 140, 0.45);
+}
+
+.platform-track h3 {
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
 .punitive-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

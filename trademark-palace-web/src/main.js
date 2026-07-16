@@ -342,6 +342,12 @@ function renderHall() {
           <span class="hall-tag">恶意/故意 × 1～5</span>
           <span class="muted">商标63 · 专利71 · 版权54 · 反法22（秘密）</span>
         </button>
+        <button type="button" class="menu-btn hall-card hall-platform-card" data-platform>
+          <span class="kicker">CITY CARD</span>
+          <strong>平台义务合流</strong>
+          <span class="hall-tag">通知 · 应知 · 报告</span>
+          <span class="muted">电商法41–45 · 商标帮助 · 版权避风港 · 反法21</span>
+        </button>
       </div>
     </main>
   `;
@@ -365,6 +371,9 @@ function renderHall() {
   );
   app.querySelector("[data-punitive]")?.addEventListener("click", () =>
     navigate({ name: "punitive" })
+  );
+  app.querySelector("[data-platform]")?.addEventListener("click", () =>
+    navigate({ name: "platform" })
   );
 }
 
@@ -443,6 +452,11 @@ function renderHome() {
           <strong>惩罚性对照卡</strong>
           <span class="muted">四馆恶意/故意与一至五倍对照</span>
         </button>
+        <button type="button" class="menu-btn" data-go="platform">
+          <span class="kicker">CITY CARD</span>
+          <strong>平台义务合流</strong>
+          <span class="muted">电商法通知措施 · 四馆下电梯</span>
+        </button>
       </div>
     </main>
     ${dock("home")}
@@ -479,6 +493,9 @@ function renderHome() {
   );
   app.querySelector('[data-go="punitive"]')?.addEventListener("click", () =>
     navigate({ name: "punitive" })
+  );
+  app.querySelector('[data-go="platform"]')?.addEventListener("click", () =>
+    navigate({ name: "platform" })
   );
   app.querySelector("[data-hall]")?.addEventListener("click", () => {
     stopListen();
@@ -845,6 +862,109 @@ async function renderPunitive() {
             .map((b) => `<li>${escapeHtml(b)}</li>`)
             .join("")}
         </ul>
+      </section>
+    </main>
+  `;
+
+  app.querySelector("[data-back]").onclick = () => {
+    if (data) navigate({ name: "home" });
+    else navigate({ name: "hall" });
+  };
+  app.querySelectorAll("[data-ride-palace]").forEach((btn) => {
+    btn.onclick = () =>
+      rideElevator(
+        btn.getAttribute("data-ride-palace"),
+        btn.getAttribute("data-ride-room")
+      );
+  });
+}
+
+let cityPlatformCache = null;
+
+async function loadCityPlatform() {
+  if (cityPlatformCache) return cityPlatformCache;
+  const res = await fetch(asset("data/city-platform.json"));
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  cityPlatformCache = await res.json();
+  return cityPlatformCache;
+}
+
+async function renderPlatform() {
+  app.innerHTML = `<main class="app-shell"><p class="empty">正在展开平台义务合流卡…</p></main>`;
+  let card;
+  try {
+    card = await loadCityPlatform();
+  } catch (err) {
+    app.innerHTML = `
+      <main class="app-shell">
+        <h1>合流卡加载失败</h1>
+        <p class="muted">${String(err)}</p>
+        <button type="button" class="btn btn-primary" data-back style="margin-top:14px">返回</button>
+      </main>`;
+    app.querySelector("[data-back]").onclick = () =>
+      navigate({ name: data ? "home" : "hall" });
+    return;
+  }
+
+  const bb = card.backbone || {};
+  app.innerHTML = `
+    <main class="app-shell">
+      <button type="button" class="back-link" data-back>← ${data ? "馆门" : "选馆"}</button>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">CITY CARD</p>
+          <h1>${card.title}</h1>
+        </div>
+      </header>
+      <p class="hall-motto">${card.motto}</p>
+      <p class="muted">${card.blurb}</p>
+
+      <section class="card" style="margin-top:14px">
+        <label class="eyebrow block-label">${escapeHtml(bb.law || "电子商务法")} · ${escapeHtml(bb.arts || "")}</label>
+        <ol class="punitive-steps">
+          ${(bb.steps || []).map((s) => `<li>${escapeHtml(s)}</li>`).join("")}
+        </ol>
+        <p style="margin-top:10px"><strong>必要措施</strong> ${escapeHtml(bb.measures || "")}</p>
+        <p class="muted">${escapeHtml(bb.adminTip || "")}</p>
+      </section>
+
+      <section class="punitive-grid" style="margin-top:14px">
+        ${(card.tracks || [])
+          .map(
+            (t) => `
+          <article class="card punitive-row platform-track">
+            <p class="eyebrow">${escapeHtml(t.label)} · ${escapeHtml(t.tag || "")}</p>
+            <h3>${escapeHtml(t.focus || "")}</h3>
+            <ul class="punitive-contrast">
+              ${(t.hooks || []).map((h) => `<li>${escapeHtml(h)}</li>`).join("")}
+            </ul>
+            <div class="chip-row" style="margin-top:10px">
+              ${(t.rooms || [])
+                .map(
+                  (r) => `
+                <button type="button" class="chip chip-elevator" data-ride-palace="${t.palaceId}" data-ride-room="${r.roomId}">
+                  ${escapeHtml(r.floorHint || "")} ${escapeHtml(r.roomId)} ${escapeHtml(r.role || "")}
+                </button>`
+                )
+                .join("")}
+            </div>
+          </article>`
+          )
+          .join("")}
+      </section>
+
+      <section class="card" style="margin-top:14px">
+        <label class="eyebrow block-label">合流规则</label>
+        <ul class="punitive-contrast">
+          ${(card.mergeRules || []).map((b) => `<li>${escapeHtml(b)}</li>`).join("")}
+        </ul>
+      </section>
+
+      <section class="card" style="margin-top:14px">
+        <label class="eyebrow block-label">办案五问</label>
+        <ol class="punitive-steps">
+          ${(card.fiveQuestions || []).map((q) => `<li>${escapeHtml(q)}</li>`).join("")}
+        </ol>
       </section>
     </main>
   `;
@@ -1579,6 +1699,7 @@ function render() {
   if (route.name === "hall") return renderHall();
   if (route.name === "elevators") return renderElevators();
   if (route.name === "punitive") return renderPunitive();
+  if (route.name === "platform") return renderPlatform();
   if (!data) {
     app.innerHTML = `<main class="app-shell"><p class="empty">尚未进入馆。请先选馆。</p>
       <button type="button" class="btn btn-primary" data-to-hall style="margin-top:14px">去选馆</button></main>`;

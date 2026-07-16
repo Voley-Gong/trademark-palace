@@ -1577,7 +1577,14 @@
           "exceptions": [],
           "peg": null,
           "crossTrademark": null,
-          "crossPatent": null
+          "crossPatent": null,
+          "sideNotes": [
+            {
+              "id": "city-platform",
+              "article": "ecom",
+              "oneLiner": "电商平台义务合流：选馆页「平台义务合流」· 电商法41-45 + 四馆下电梯"
+            }
+          ]
         },
         {
           "id": "B13",
@@ -2686,7 +2693,14 @@
             }
           ],
           "exceptions": [],
-          "crossPatent": null
+          "crossPatent": null,
+          "sideNotes": [
+            {
+              "id": "city-platform",
+              "article": "ecom",
+              "oneLiner": "电商平台义务合流：选馆页「平台义务合流」· 电商法41-45 + 四馆下电梯"
+            }
+          ]
         },
         {
           "id": "T4",
@@ -2837,7 +2851,14 @@
           ],
           "exceptions": [],
           "peg": null,
-          "crossPatent": null
+          "crossPatent": null,
+          "sideNotes": [
+            {
+              "id": "city-platform",
+              "article": "ecom",
+              "oneLiner": "电商平台义务合流：选馆页「平台义务合流」· 电商法41-45 + 四馆下电梯"
+            }
+          ]
         },
         {
           "id": "T7",
@@ -2984,7 +3005,14 @@
           ],
           "exceptions": [],
           "peg": null,
-          "crossPatent": null
+          "crossPatent": null,
+          "sideNotes": [
+            {
+              "id": "city-platform",
+              "article": "ecom",
+              "oneLiner": "电商平台义务合流：选馆页「平台义务合流」· 电商法41-45 + 四馆下电梯"
+            }
+          ]
         }
       ]
     },

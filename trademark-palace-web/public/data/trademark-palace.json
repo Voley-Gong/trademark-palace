@@ -432,7 +432,14 @@
             "R6"
           ],
           "peg": null,
-          "drillPrompt": "告平台时，优先固定哪两类证据？"
+          "drillPrompt": "告平台时，优先固定哪两类证据？",
+          "sideNotes": [
+            {
+              "id": "city-platform",
+              "article": "ecom",
+              "oneLiner": "电商平台义务合流：选馆页「平台义务合流」· 电商法41-45 + 四馆下电梯"
+            }
+          ]
         },
         {
           "id": "B7",
@@ -1964,6 +1971,13 @@
               "name": "提供仓储物流帮助侵权案",
               "hook": "故意提供便利",
               "takeaway": "主观故意+便利行为是帮助侵权双轴。"
+            }
+          ],
+          "sideNotes": [
+            {
+              "id": "city-platform",
+              "article": "ecom",
+              "oneLiner": "电商平台义务合流：选馆页「平台义务合流」· 电商法41-45 + 四馆下电梯"
             }
           ]
         },

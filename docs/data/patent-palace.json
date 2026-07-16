@@ -1165,6 +1165,13 @@
               "hook": "故意与情节严重",
               "takeaway": "先定赔偿基数方法，再论证故意+情节严重后乘一至五倍。"
             }
+          ],
+          "sideNotes": [
+            {
+              "id": "city-platform",
+              "article": "ecom",
+              "oneLiner": "电商平台义务合流：选馆页「平台义务合流」· 电商法41-45 + 四馆下电梯"
+            }
           ]
         }
       ]
@@ -3207,6 +3214,11 @@
               "id": "city-punitive",
               "article": "punitive",
               "oneLiner": "四馆惩罚性对照：选馆页「惩罚性对照卡」· 故意/恶意+情节严重×1～5"
+            },
+            {
+              "id": "city-platform",
+              "article": "ecom",
+              "oneLiner": "电商平台义务合流：选馆页「平台义务合流」· 电商法41-45 + 四馆下电梯"
             }
           ]
         },
