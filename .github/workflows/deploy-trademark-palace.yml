@@ -8,6 +8,7 @@ on:
       - "docs/data/trademark-palace.json"
       - "docs/data/patent-palace.json"
       - "docs/data/copyright-palace.json"
+      - "docs/data/competition-palace.json"
       - ".github/workflows/deploy-trademark-palace.yml"
   workflow_dispatch:
 
@@ -38,6 +39,7 @@ jobs:
           cp docs/data/trademark-palace.json trademark-palace-web/public/data/trademark-palace.json
           cp docs/data/patent-palace.json trademark-palace-web/public/data/patent-palace.json
           cp docs/data/copyright-palace.json trademark-palace-web/public/data/copyright-palace.json
+          cp docs/data/competition-palace.json trademark-palace-web/public/data/competition-palace.json
 
       - name: Resolve BASE_PATH
         id: base

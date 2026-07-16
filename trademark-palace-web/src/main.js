@@ -46,6 +46,13 @@ const PALACES = [
     motto: "问表达相似",
     blurb: "作品成立、接触与实质性相似、合理使用与七剑行为",
   },
+  {
+    id: "competition",
+    file: "data/competition-palace.json",
+    label: "竞争与秘密馆",
+    motto: "问市场秩序",
+    blurb: "混淆攀附、虚假宣传、网络不正当竞争与商业秘密",
+  },
 ];
 
 /** @type {any} */
@@ -271,7 +278,7 @@ function renderHall() {
           <h1>知产诉讼城</h1>
         </div>
       </header>
-      <p class="hall-motto">商标问来源混淆，专利问特征落入，著作权问表达相似。</p>
+      <p class="hall-motto">商标问来源混淆，专利问特征落入，著作权问表达相似，竞争问市场秩序。</p>
       <p class="muted">选一栋馆进入记忆宫殿。走廊、听过、五问共用同一套引擎。</p>
       <div class="menu-grid hall-grid">
         ${PALACES.map(
