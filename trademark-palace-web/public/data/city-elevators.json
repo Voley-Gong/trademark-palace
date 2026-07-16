@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "title": "知产诉讼城 · 跨馆电梯",
+  "motto": "商标问来源混淆，专利问特征落入，著作权问表达相似，竞争问市场秩序",
+  "blurb": "选错馆就换电梯。字号/装潢/未注册标识常从商标或版权转入竞争馆；作品表达仍回著作权馆。",
+  "nodes": [
+    {
+      "id": "tm-S1",
+      "palaceId": "trademark",
+      "roomId": "S1",
+      "label": "字号侧门",
+      "floorHint": "3F"
+    },
+    {
+      "id": "cr-E2",
+      "palaceId": "copyright",
+      "roomId": "E2",
+      "label": "跨馆门",
+      "floorHint": "3F"
+    },
+    {
+      "id": "cp-O2",
+      "palaceId": "competition",
+      "roomId": "O2",
+      "label": "跨馆分流台",
+      "floorHint": "1F"
+    },
+    {
+      "id": "cp-P1",
+      "palaceId": "competition",
+      "roomId": "P1",
+      "label": "混淆总厅",
+      "floorHint": "3F"
+    },
+    {
+      "id": "cp-R1",
+      "palaceId": "competition",
+      "roomId": "R1",
+      "label": "商品标识混淆厅",
+      "floorHint": "3F"
+    },
+    {
+      "id": "cp-R2",
+      "palaceId": "competition",
+      "roomId": "R2",
+      "label": "字号·关键词厅",
+      "floorHint": "3F"
+    },
+    {
+      "id": "tm-P1",
+      "palaceId": "trademark",
+      "roomId": "P1",
+      "label": "专用权边界厅",
+      "floorHint": "3F"
+    },
+    {
+      "id": "cr-P1",
+      "palaceId": "copyright",
+      "roomId": "P1",
+      "label": "作品门",
+      "floorHint": "3F"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-tm-cp-tradename",
+      "from": "tm-S1",
+      "to": "cp-R2",
+      "label": "字号攀附 → 反法混淆",
+      "bidirectional": true
+    },
+    {
+      "id": "e-tm-cp-gate",
+      "from": "tm-S1",
+      "to": "cp-O2",
+      "label": "58 换轨 → 竞争馆分流",
+      "bidirectional": true
+    },
+    {
+      "id": "e-cr-cp-dress",
+      "from": "cr-E2",
+      "to": "cp-R1",
+      "label": "作品弱装潢强 → 反法装潢",
+      "bidirectional": true
+    },
+    {
+      "id": "e-cr-cp-gate",
+      "from": "cr-E2",
+      "to": "cp-O2",
+      "label": "跨馆门 → 分流台",
+      "bidirectional": true
+    },
+    {
+      "id": "e-cr-cp-confuse",
+      "from": "cr-E2",
+      "to": "cp-P1",
+      "label": "市场误认 ↔ 混淆总厅",
+      "bidirectional": true
+    },
+    {
+      "id": "e-cp-tm-reg",
+      "from": "cp-O2",
+      "to": "tm-P1",
+      "label": "已注册商标冲突 → 商标边界",
+      "bidirectional": true
+    },
+    {
+      "id": "e-cp-cr-work",
+      "from": "cp-O2",
+      "to": "cr-P1",
+      "label": "表达抄袭 → 作品门",
+      "bidirectional": true
+    }
+  ]
+}

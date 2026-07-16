@@ -80,8 +80,48 @@ async function loadPalace(id, nextRoute = { name: "home" }) {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   data = await res.json();
   document.title = `${data.title || meta.label} · 知产诉讼城`;
-  route = nextRoute;
+  let resolved = { ...nextRoute };
+  if (resolved.roomId && !resolved.floorId) {
+    const hit = findRoom(resolved.roomId);
+    if (hit) {
+      resolved = {
+        name: "corridor",
+        floorId: hit.floor.id,
+        roomId: hit.room.id,
+        revealed: !!resolved.revealed,
+      };
+    }
+  }
+  route = resolved;
   render();
+}
+
+async function rideElevator(palaceId, roomId) {
+  try {
+    await loadPalace(palaceId, { name: "corridor", roomId, revealed: false });
+  } catch (err) {
+    app.innerHTML = `
+      <main class="app-shell">
+        <h1>电梯未能抵达</h1>
+        <p class="muted">${String(err)}</p>
+        <button type="button" class="btn btn-primary" data-back-hall style="margin-top:14px">返回选馆</button>
+      </main>`;
+    app.querySelector("[data-back-hall]").onclick = () => navigate({ name: "hall" });
+  }
+}
+
+let cityElevatorsCache = null;
+
+async function loadCityElevators() {
+  if (cityElevatorsCache) return cityElevatorsCache;
+  if (data?.cityElevatorsFull) {
+    cityElevatorsCache = data.cityElevatorsFull;
+    return cityElevatorsCache;
+  }
+  const res = await fetch(asset("data/city-elevators.json"));
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  cityElevatorsCache = await res.json();
+  return cityElevatorsCache;
 }
 
 function findFloor(floorId) {
@@ -290,6 +330,12 @@ function renderHall() {
             <span class="muted">${p.blurb}</span>
           </button>`
         ).join("")}
+        <button type="button" class="menu-btn hall-card hall-elevator-card" data-elevators>
+          <span class="kicker">CITY TRANSIT</span>
+          <strong>跨馆电梯</strong>
+          <span class="hall-tag">选错馆就换轨</span>
+          <span class="muted">商标字号侧门 · 版权跨馆门 · 竞争分流台双向直达</span>
+        </button>
       </div>
     </main>
   `;
@@ -308,6 +354,9 @@ function renderHall() {
       }
     };
   });
+  app.querySelector("[data-elevators]")?.addEventListener("click", () =>
+    navigate({ name: "elevators" })
+  );
 }
 
 function renderHome() {
@@ -375,6 +424,11 @@ function renderHome() {
           <strong>五问办案</strong>
           <span class="muted">侵权向 + 程序向假想案</span>
         </button>
+        <button type="button" class="menu-btn" data-go="elevators">
+          <span class="kicker">CITY TRANSIT</span>
+          <strong>跨馆电梯</strong>
+          <span class="muted">字号 / 装潢 / 分流台双向换轨</span>
+        </button>
       </div>
     </main>
     ${dock("home")}
@@ -406,6 +460,9 @@ function renderHome() {
     navigate({ name: "peg", idx: 0, revealed: false })
   );
   app.querySelector('[data-go="drill"]')?.addEventListener("click", () => navigate({ name: "drill" }));
+  app.querySelector('[data-go="elevators"]')?.addEventListener("click", () =>
+    navigate({ name: "elevators" })
+  );
   app.querySelector("[data-hall]")?.addEventListener("click", () => {
     stopListen();
     data = null;
@@ -515,6 +572,25 @@ function roomPanelHtml(selected, revealed) {
           </div>`
         : ""
     }
+    ${
+      selected.crossPalaceLinks?.length
+        ? `<div class="elevator-panel">
+            <label class="eyebrow block-label">跨馆电梯</label>
+            <p class="muted" style="margin:0 0 8px">选错请求权基础时，从这里换轨到其他馆。</p>
+            <div class="chip-row link-row">
+              ${selected.crossPalaceLinks
+                .map(
+                  (link, idx) => `
+                <button type="button" class="chip chip-elevator" data-xlink="${idx}">
+                  ✈ ${palaceMeta(link.palaceId).label} · ${link.label}
+                  <span class="elevator-reason">${link.reason}</span>
+                </button>`
+                )
+                .join("")}
+            </div>
+          </div>`
+        : ""
+    }
   `;
 }
 
@@ -549,6 +625,117 @@ function bindRoomPanelActions(floor, selected) {
         revealed: false,
       });
     });
+  });
+  panel.querySelectorAll("[data-xlink]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = Number(btn.getAttribute("data-xlink"));
+      const link = selected.crossPalaceLinks?.[idx];
+      if (!link) return;
+      rideElevator(link.palaceId, link.roomId);
+    });
+  });
+}
+
+async function renderElevators() {
+  app.innerHTML = `<main class="app-shell"><p class="empty">正在展开跨馆电梯图…</p></main>`;
+  let city;
+  try {
+    city = await loadCityElevators();
+  } catch (err) {
+    app.innerHTML = `
+      <main class="app-shell">
+        <h1>电梯图加载失败</h1>
+        <p class="muted">${String(err)}</p>
+        <button type="button" class="btn btn-primary" data-back style="margin-top:14px">返回</button>
+      </main>`;
+    app.querySelector("[data-back]").onclick = () =>
+      navigate({ name: data ? "home" : "hall" });
+    return;
+  }
+
+  const nodeMap = Object.fromEntries(city.nodes.map((n) => [n.id, n]));
+  const byPalace = {};
+  for (const p of PALACES) byPalace[p.id] = [];
+  for (const n of city.nodes) {
+    if (!byPalace[n.palaceId]) byPalace[n.palaceId] = [];
+    byPalace[n.palaceId].push(n);
+  }
+
+  app.innerHTML = `
+    <main class="app-shell">
+      <button type="button" class="back-link" data-back>← ${data ? "馆门" : "选馆"}</button>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">CITY TRANSIT</p>
+          <h1>${city.title}</h1>
+        </div>
+      </header>
+      <p class="hall-motto">${city.motto}</p>
+      <p class="muted">${city.blurb}</p>
+
+      <section class="elevator-map card">
+        <div class="elevator-columns">
+          ${PALACES.map((p) => {
+            const nodes = byPalace[p.id] || [];
+            return `
+              <div class="elevator-col">
+                <h3>${p.label}</h3>
+                <p class="muted">${p.motto}</p>
+                <div class="chip-row">
+                  ${
+                    nodes.length
+                      ? nodes
+                          .map(
+                            (n) => `
+                        <button type="button" class="chip chip-elevator" data-ride-palace="${n.palaceId}" data-ride-room="${n.roomId}">
+                          ${n.floorHint || ""} ${n.roomId} ${n.label}
+                        </button>`
+                          )
+                          .join("")
+                      : `<span class="muted">本图暂无锚点</span>`
+                  }
+                </div>
+              </div>`;
+          }).join("")}
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:14px">
+        <label class="eyebrow block-label">线路</label>
+        <ul class="elevator-edges">
+          ${city.edges
+            .map((e) => {
+              const from = nodeMap[e.from];
+              const to = nodeMap[e.to];
+              if (!from || !to) return "";
+              const arrow = e.bidirectional ? "↔" : "→";
+              return `<li>
+                <button type="button" class="edge-btn" data-ride-palace="${from.palaceId}" data-ride-room="${from.roomId}">
+                  ${palaceMeta(from.palaceId).label}·${from.roomId}
+                </button>
+                <span class="edge-arrow">${arrow}</span>
+                <button type="button" class="edge-btn" data-ride-palace="${to.palaceId}" data-ride-room="${to.roomId}">
+                  ${palaceMeta(to.palaceId).label}·${to.roomId}
+                </button>
+                <span class="muted"> · ${e.label}</span>
+              </li>`;
+            })
+            .join("")}
+        </ul>
+      </section>
+    </main>
+  `;
+
+  app.querySelector("[data-back]").onclick = () => {
+    if (data) navigate({ name: "home" });
+    else navigate({ name: "hall" });
+  };
+  app.querySelectorAll("[data-ride-palace]").forEach((btn) => {
+    btn.onclick = () =>
+      rideElevator(
+        btn.getAttribute("data-ride-palace"),
+        btn.getAttribute("data-ride-room")
+      );
   });
 }
 
@@ -1267,6 +1454,7 @@ function shuffle(arr) {
 
 function render() {
   if (route.name === "hall") return renderHall();
+  if (route.name === "elevators") return renderElevators();
   if (!data) {
     app.innerHTML = `<main class="app-shell"><p class="empty">尚未进入馆。请先选馆。</p>
       <button type="button" class="btn btn-primary" data-to-hall style="margin-top:14px">去选馆</button></main>`;

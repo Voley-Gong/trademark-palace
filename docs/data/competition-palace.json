@@ -469,7 +469,7 @@
             "选灯咔哒"
           ],
           "sceneHook": "装潢像商标又像作品，不知告哪条",
-          "oral30s": "注册商标核准冲突走商标馆；作品表达抄袭走著作权馆；有一定影响的装潢字号域名关键词攀附、商业秘密、虚假宣传、网络干扰走本馆。可并行，但先定主路径。",
+          "oral30s": "注册商标核准冲突走商标馆；作品表达抄袭走著作权馆；有一定影响的装潢字号域名关键词攀附、商业秘密、虚假宣传、网络干扰走本馆。可乘电梯回商标边界厅或著作权作品门。",
           "elements": [
             "路径选择",
             "有一定影响",
@@ -497,7 +497,37 @@
           ],
           "exceptions": [],
           "peg": null,
-          "crossPatent": null
+          "crossPatent": null,
+          "crossPalaceLinks": [
+            {
+              "palaceId": "trademark",
+              "roomId": "S1",
+              "label": "3F·字号侧门",
+              "reason": "58 换轨 → 竞争馆分流",
+              "edgeId": "e-tm-cp-gate"
+            },
+            {
+              "palaceId": "copyright",
+              "roomId": "E2",
+              "label": "3F·跨馆门",
+              "reason": "跨馆门 → 分流台",
+              "edgeId": "e-cr-cp-gate"
+            },
+            {
+              "palaceId": "trademark",
+              "roomId": "P1",
+              "label": "3F·专用权边界厅",
+              "reason": "已注册商标冲突 → 商标边界",
+              "edgeId": "e-cp-tm-reg"
+            },
+            {
+              "palaceId": "copyright",
+              "roomId": "P1",
+              "label": "3F·作品门",
+              "reason": "表达抄袭 → 作品门",
+              "edgeId": "e-cp-cr-work"
+            }
+          ]
         }
       ]
     },
@@ -557,7 +587,16 @@
             }
           ],
           "exceptions": [],
-          "crossPatent": null
+          "crossPatent": null,
+          "crossPalaceLinks": [
+            {
+              "palaceId": "copyright",
+              "roomId": "E2",
+              "label": "3F·跨馆门",
+              "reason": "市场误认 ↔ 混淆总厅",
+              "edgeId": "e-cr-cp-confuse"
+            }
+          ]
         },
         {
           "id": "R1",
@@ -605,7 +644,16 @@
           ],
           "exceptions": [],
           "peg": null,
-          "crossPatent": null
+          "crossPatent": null,
+          "crossPalaceLinks": [
+            {
+              "palaceId": "copyright",
+              "roomId": "E2",
+              "label": "3F·跨馆门",
+              "reason": "作品弱装潢强 → 反法装潢",
+              "edgeId": "e-cr-cp-dress"
+            }
+          ]
         },
         {
           "id": "R2",
@@ -653,7 +701,16 @@
           "exceptions": [],
           "peg": null,
           "crossPatent": null,
-          "crossCopyright": null
+          "crossCopyright": null,
+          "crossPalaceLinks": [
+            {
+              "palaceId": "trademark",
+              "roomId": "S1",
+              "label": "3F·字号侧门",
+              "reason": "字号攀附 → 反法混淆",
+              "edgeId": "e-tm-cp-tradename"
+            }
+          ]
         },
         {
           "id": "R3",
@@ -1723,6 +1780,17 @@
       "跨馆电梯可视化",
       "司法解释细钉",
       "行政执法程序加厚"
+    ]
+  },
+  "cityElevators": {
+    "title": "知产诉讼城 · 跨馆电梯",
+    "motto": "商标问来源混淆，专利问特征落入，著作权问表达相似，竞争问市场秩序",
+    "blurb": "选错馆就换电梯。字号/装潢/未注册标识常从商标或版权转入竞争馆；作品表达仍回著作权馆。",
+    "nodeIds": [
+      "cp-O2",
+      "cp-P1",
+      "cp-R1",
+      "cp-R2"
     ]
   }
 }

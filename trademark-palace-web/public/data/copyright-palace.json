@@ -2456,7 +2456,16 @@
               "takeaway": "先问是不是作品，再谈像不像、侵不侵权。"
             }
           ],
-          "exceptions": []
+          "exceptions": [],
+          "crossPalaceLinks": [
+            {
+              "palaceId": "competition",
+              "roomId": "O2",
+              "label": "1F·跨馆分流台",
+              "reason": "表达抄袭 → 作品门",
+              "edgeId": "e-cp-cr-work"
+            }
+          ]
         },
         {
           "id": "P2",
@@ -3469,7 +3478,7 @@
             "门缝风声"
           ],
           "sceneHook": "作品感弱但市场混淆强",
-          "oral30s": "作品性弱但存在有一定影响的装潢、名称混淆或虚假宣传时，应考虑改走商标或反不正当竞争路径。",
+          "oral30s": "作品性弱但存在有一定影响的装潢、名称混淆或虚假宣传时，应考虑改走商标或反不正当竞争路径。乘跨馆电梯可直达竞争馆分流台、混淆总厅与装潢厅。",
           "elements": [
             "路径选择",
             "反法衔接",
@@ -3495,7 +3504,30 @@
               "takeaway": "选对请求权基础，往往比在著作权里硬打更有效。"
             }
           ],
-          "exceptions": []
+          "exceptions": [],
+          "crossPalaceLinks": [
+            {
+              "palaceId": "competition",
+              "roomId": "R1",
+              "label": "3F·商品标识混淆厅",
+              "reason": "作品弱装潢强 → 反法装潢",
+              "edgeId": "e-cr-cp-dress"
+            },
+            {
+              "palaceId": "competition",
+              "roomId": "O2",
+              "label": "1F·跨馆分流台",
+              "reason": "跨馆门 → 分流台",
+              "edgeId": "e-cr-cp-gate"
+            },
+            {
+              "palaceId": "competition",
+              "roomId": "P1",
+              "label": "3F·混淆总厅",
+              "reason": "市场误认 ↔ 混淆总厅",
+              "edgeId": "e-cr-cp-confuse"
+            }
+          ]
         }
       ]
     },
@@ -4831,6 +4863,15 @@
       "竞争与秘密馆",
       "跨馆电梯可视化",
       "集体管理细则随案加钉"
+    ]
+  },
+  "cityElevators": {
+    "title": "知产诉讼城 · 跨馆电梯",
+    "motto": "商标问来源混淆，专利问特征落入，著作权问表达相似，竞争问市场秩序",
+    "blurb": "选错馆就换电梯。字号/装潢/未注册标识常从商标或版权转入竞争馆；作品表达仍回著作权馆。",
+    "nodeIds": [
+      "cr-E2",
+      "cr-P1"
     ]
   }
 }
