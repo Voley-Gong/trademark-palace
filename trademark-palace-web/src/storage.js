@@ -1,8 +1,35 @@
-const STORAGE_KEY = "trademark-palace-progress-v1";
+const LAST_PALACE_KEY = "ip-palace-last-id";
+
+let palaceId = "trademark";
+
+function storageKey() {
+  return `palace-progress-v1:${palaceId}`;
+}
+
+export function getPalaceId() {
+  return palaceId;
+}
+
+export function setPalaceId(id) {
+  palaceId = id || "trademark";
+  try {
+    localStorage.setItem(LAST_PALACE_KEY, palaceId);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function getLastPalaceId() {
+  try {
+    return localStorage.getItem(LAST_PALACE_KEY) || null;
+  } catch {
+    return null;
+  }
+}
 
 export function loadProgress() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(storageKey());
     if (!raw) return { moldyRooms: {}, pegSeen: 0, drillsDone: 0 };
     return JSON.parse(raw);
   } catch {
@@ -11,7 +38,7 @@ export function loadProgress() {
 }
 
 export function saveProgress(progress) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  localStorage.setItem(storageKey(), JSON.stringify(progress));
 }
 
 export function markMoldy(roomId) {

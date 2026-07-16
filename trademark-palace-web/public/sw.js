@@ -1,6 +1,13 @@
 /* Trademark palace PWA service worker */
-const CACHE = "trademark-palace-v1";
-const PRECACHE = ["./", "./index.html", "./data/trademark-palace.json", "./manifest.webmanifest", "./icons/icon.svg"];
+const CACHE = "ip-palace-v2";
+const PRECACHE = [
+  "./",
+  "./index.html",
+  "./data/trademark-palace.json",
+  "./data/patent-palace.json",
+  "./manifest.webmanifest",
+  "./icons/icon.svg",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

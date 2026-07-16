@@ -36,9 +36,15 @@ export function hasSession() {
   return queue.length > 0 && cursor < queue.length;
 }
 
-export function buildFloorScript(floor, articles = {}) {
+function floorSpokenName(floor) {
+  if (floor.level === 0) return `地下室，${floor.name}`;
+  return `${floor.level}楼，${floor.name}`;
+}
+
+export function buildFloorScript(floor, articles = {}, meta = {}) {
   const lines = [];
-  lines.push(`现在进入${floor.level}楼，${floor.name}。本层任务：${floor.mission}。`);
+  if (meta.intro) lines.push(meta.intro);
+  lines.push(`现在进入${floorSpokenName(floor)}。本层任务：${floor.mission}。`);
   for (const room of floor.rooms) {
     lines.push(`下一间，${room.id}，${room.title}，${room.articleLabel}。`);
     if (room.sceneHook) lines.push(`场景：${room.sceneHook}`);
@@ -51,7 +57,10 @@ export function buildFloorScript(floor, articles = {}) {
       lines.push(`案例锚：${room.caseAnchor.join("，")}。`);
     }
   }
-  lines.push(`${floor.level}楼走廊结束。可以回到馆门，或换一层继续听。`);
+  lines.push(
+    meta.outro ||
+      `${floor.level === 0 ? "地下室" : `${floor.level}楼`}走廊结束。可以回到馆门，或换一层继续听。`
+  );
   return lines;
 }
 

@@ -1,4 +1,12 @@
-import { loadProgress, markMoldy, clearMoldy, bumpDrill } from "./storage.js";
+import {
+  loadProgress,
+  markMoldy,
+  clearMoldy,
+  bumpDrill,
+  setPalaceId,
+  getPalaceId,
+  getLastPalaceId,
+} from "./storage.js";
 import {
   buildFloorScript,
   playScript,
@@ -16,14 +24,51 @@ import { registerPwa } from "./pwa.js";
 const app = document.getElementById("app");
 const asset = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 
+const PALACES = [
+  {
+    id: "trademark",
+    file: "data/trademark-palace.json",
+    label: "商标馆",
+    motto: "问来源混淆",
+    blurb: "注册边界、近似混淆、救济阶梯与程序期限",
+  },
+  {
+    id: "patent",
+    file: "data/patent-palace.json",
+    label: "专利馆",
+    motto: "问特征落入",
+    blurb: "权要视图、全面覆盖与等同、无效衔接与赔偿",
+  },
+];
+
 /** @type {any} */
 let data = null;
-let route = { name: "home" };
+let route = { name: "hall" };
 let progress = loadProgress();
 
 /** Keep corridor shell mounted to avoid full-page flash */
 let corridorMounted = false;
 let corridorFloorId = null;
+
+function palaceMeta(id = getPalaceId()) {
+  return PALACES.find((p) => p.id === id) || PALACES[0];
+}
+
+async function loadPalace(id, nextRoute = { name: "home" }) {
+  const meta = palaceMeta(id);
+  stopListen();
+  corridorMounted = false;
+  corridorFloorId = null;
+  setPalaceId(meta.id);
+  progress = loadProgress();
+  app.innerHTML = `<main class="app-shell"><p class="empty">正在进入${meta.label}…</p></main>`;
+  const res = await fetch(asset(meta.file));
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  data = await res.json();
+  document.title = `${data.title || meta.label} · 知产诉讼城`;
+  route = nextRoute;
+  render();
+}
 
 function findFloor(floorId) {
   return data.floors.find((f) => f.id === floorId);
@@ -209,9 +254,52 @@ function bindDock() {
   });
 }
 
+function renderHall() {
+  const last = getLastPalaceId();
+  app.innerHTML = `
+    <main class="app-shell hall-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">IP LITIGATION CITY</p>
+          <h1>知产诉讼城</h1>
+        </div>
+      </header>
+      <p class="hall-motto">商标问来源混淆，专利问特征落入。</p>
+      <p class="muted">选一栋馆进入记忆宫殿。走廊、听过、五问共用同一套引擎。</p>
+      <div class="menu-grid hall-grid">
+        ${PALACES.map(
+          (p) => `
+          <button type="button" class="menu-btn hall-card ${last === p.id ? "hall-recent" : ""}" data-palace="${p.id}">
+            <span class="kicker">${last === p.id ? "上次进入" : "PALACE"}</span>
+            <strong>${p.label}</strong>
+            <span class="hall-tag">${p.motto}</span>
+            <span class="muted">${p.blurb}</span>
+          </button>`
+        ).join("")}
+      </div>
+    </main>
+  `;
+  app.querySelectorAll("[data-palace]").forEach((btn) => {
+    btn.onclick = async () => {
+      try {
+        await loadPalace(btn.getAttribute("data-palace"), { name: "home" });
+      } catch (err) {
+        app.innerHTML = `
+          <main class="app-shell">
+            <h1>未能加载馆数据</h1>
+            <p class="muted">${String(err)}</p>
+            <button type="button" class="btn btn-primary" data-back-hall style="margin-top:14px">返回选馆</button>
+          </main>`;
+        app.querySelector("[data-back-hall]").onclick = () => navigate({ name: "hall" });
+      }
+    };
+  });
+}
+
 function renderHome() {
   const moldCount = Object.keys(progress.moldyRooms || {}).length;
   const floorsSorted = data.floors.slice().sort((a, b) => a.level - b.level);
+  const meta = palaceMeta();
   app.innerHTML = `
     <main class="app-shell">
       <header class="topbar">
@@ -219,7 +307,9 @@ function renderHome() {
           <p class="eyebrow">${data.building} · ${data.lawEdition}</p>
           <h1>${data.title}</h1>
         </div>
+        <button type="button" class="btn btn-ghost btn-switch" data-hall>换馆</button>
       </header>
+      <p class="muted hall-inline-motto">${meta.motto}</p>
       <p class="muted">${data.description}</p>
       <div class="chip-row">
         ${floorsSorted.map((f) => `<span class="chip">${formatFloorChip(f)}</span>`).join("")}
@@ -302,6 +392,13 @@ function renderHome() {
     navigate({ name: "peg", idx: 0, revealed: false })
   );
   app.querySelector('[data-go="drill"]')?.addEventListener("click", () => navigate({ name: "drill" }));
+  app.querySelector("[data-hall]")?.addEventListener("click", () => {
+    stopListen();
+    data = null;
+    corridorMounted = false;
+    corridorFloorId = null;
+    navigate({ name: "hall" });
+  });
 }
 
 function doorButtonHtml(r, selectedId) {
@@ -636,22 +733,26 @@ function renderDrill() {
         <button type="button" class="back-link" data-back>← 馆门</button>
         <header class="topbar">
           <div>
-            <p class="eyebrow">CASE DRILLS</p>
+            <p class="eyebrow">CASE DRILLS · ${palaceMeta().label}</p>
             <h1>五问办案</h1>
           </div>
         </header>
-        <p class="muted">先选题：程序向练 2F 期限与路径；侵权向练 3F/4F 调取。</p>
+        <p class="muted">先选题：程序向练期限与路径；侵权/权属/救济向练主楼调取。</p>
         <div class="menu-grid" style="margin-top:14px">
-          ${cases
-            .map(
-              (c) => `
+          ${
+            cases.length
+              ? cases
+                  .map(
+                    (c) => `
             <button type="button" class="menu-btn" data-case="${c.id}">
               <span class="kicker">${c.trackLabel || c.track}</span>
               <strong>${c.title}</strong>
               <span class="muted">${c.prompt.slice(0, 72)}${c.prompt.length > 72 ? "…" : ""}</span>
             </button>`
-            )
-            .join("")}
+                  )
+                  .join("")
+              : `<p class="muted">本馆暂无五问假想案。</p>`
+          }
         </div>
       </main>
       ${dock("drill")}
@@ -914,7 +1015,11 @@ function renderListen() {
     if (!ok) return;
     const pauseBtn = app.querySelector("[data-pause]");
     if (pauseBtn) pauseBtn.textContent = "暂停";
-    const lines = buildFloorScript(floor, data.articles || {});
+    const scripts = data.listenScripts || {};
+    const lines = buildFloorScript(floor, data.articles || {}, {
+      intro: scripts.intro,
+      outro: scripts.outro,
+    });
     playScript(lines, {
       onProgress: ({ index, total, text }) => {
         const el = document.getElementById("listen-line");
@@ -1143,6 +1248,13 @@ function shuffle(arr) {
 }
 
 function render() {
+  if (route.name === "hall") return renderHall();
+  if (!data) {
+    app.innerHTML = `<main class="app-shell"><p class="empty">尚未进入馆。请先选馆。</p>
+      <button type="button" class="btn btn-primary" data-to-hall style="margin-top:14px">去选馆</button></main>`;
+    app.querySelector("[data-to-hall]").onclick = () => navigate({ name: "hall" });
+    return;
+  }
   progress = loadProgress();
   if (route.name === "home") return renderHome();
   if (route.name === "corridor") return renderCorridor();
@@ -1156,7 +1268,7 @@ function render() {
 
 async function boot() {
   registerPwa();
-  app.innerHTML = `<main class="app-shell"><p class="empty">正在进入商标馆…</p></main>`;
+  app.innerHTML = `<main class="app-shell"><p class="empty">正在打开知产诉讼城…</p></main>`;
 
   app.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-explain-toggle]");
@@ -1174,19 +1286,7 @@ async function boot() {
     if (closeLab) closeLab.hidden = !open;
   });
 
-  try {
-    const res = await fetch(asset("data/trademark-palace.json"));
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    data = await res.json();
-    render();
-  } catch (err) {
-    app.innerHTML = `
-      <main class="app-shell">
-        <h1>未能加载宫殿数据</h1>
-        <p class="muted">${String(err)}</p>
-        <p class="muted">请确认 data/trademark-palace.json 可访问，并用 npm run dev 启动。</p>
-      </main>`;
-  }
+  navigate({ name: "hall" });
 }
 
 boot();

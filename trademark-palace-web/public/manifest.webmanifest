@@ -1,7 +1,7 @@
 {
-  "name": "商标馆记忆宫殿",
-  "short_name": "商标馆",
-  "description": "知产实习：法条宫殿、五问办案、通勤听过",
+  "name": "知产诉讼城记忆宫殿",
+  "short_name": "知产诉讼城",
+  "description": "商标馆与专利馆：法条宫殿、五问办案、通勤听过",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
