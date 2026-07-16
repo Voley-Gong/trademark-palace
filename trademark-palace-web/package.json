@@ -1,0 +1,20 @@
+{
+  "name": "trademark-palace-web",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "build:gh": "vite build",
+    "preview": "vite preview --host",
+    "sync-data": "python ../scripts/enrich-trademark-palace.py",
+    "sync-explains": "python ../scripts/add-article-explains.py",
+    "sync-2f": "python ../scripts/add-trademark-2f.py",
+    "sync-cases": "python ../scripts/add-case-drills.py",
+    "sync-basement": "python ../scripts/add-basement-cases-search-data.py"
+  },
+  "devDependencies": {
+    "vite": "^7.2.4"
+  }
+}

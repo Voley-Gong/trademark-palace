@@ -1,0 +1,25 @@
+# Dependencies & build
+node_modules/
+dist/
+*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.cursor/
+*.swp
+*.swo
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Other local projects in this workspace (not part of palace deploy)
+claim-rights-trainer/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
