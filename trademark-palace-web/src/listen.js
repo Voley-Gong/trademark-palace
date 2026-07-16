@@ -41,26 +41,68 @@ function floorSpokenName(floor) {
   return `${floor.level}楼，${floor.name}`;
 }
 
+function resolveFloorMeta(floor, meta = {}) {
+  const byFloor = meta.byFloor || {};
+  const local = byFloor[floor.id] || {};
+  return {
+    intro: local.intro || meta.intro,
+    outro:
+      local.outro ||
+      meta.outro ||
+      `${floor.level === 0 ? "地下室" : `${floor.level}楼`}走廊结束。可以回到馆门，或换一层继续听。`,
+    motto: local.motto || meta.motto,
+    bridge: local.bridge || "",
+  };
+}
+
+/**
+ * Build spoken lines for a floor.
+ * meta: { intro, outro, motto, byFloor: { [floorId]: { intro, outro, motto, bridge } } }
+ */
 export function buildFloorScript(floor, articles = {}, meta = {}) {
   const lines = [];
-  if (meta.intro) lines.push(meta.intro);
+  const floorMeta = resolveFloorMeta(floor, meta);
+  if (floorMeta.intro) lines.push(floorMeta.intro);
+  if (floorMeta.motto) lines.push(`本层口诀：${floorMeta.motto}`);
   lines.push(`现在进入${floorSpokenName(floor)}。本层任务：${floor.mission}。`);
-  for (const room of floor.rooms) {
-    lines.push(`下一间，${room.id}，${room.title}，${room.articleLabel}。`);
-    if (room.sceneHook) lines.push(`场景：${room.sceneHook}`);
-    if (room.oral30s) lines.push(`口述：${room.oral30s}`);
+  if (floor.mapAscii) {
+    lines.push(`走廊地图：${floor.mapAscii}。`);
+  }
+
+  const rooms = floor.rooms || [];
+  for (let i = 0; i < rooms.length; i += 1) {
+    const room = rooms[i];
+    lines.push(`第${i + 1}间，${room.id}，${room.title}，${room.articleLabel}。`);
+    if (room.sceneHook) lines.push(`场景钩：${room.sceneHook}。`);
+    if (room.oral30s) lines.push(`三十秒口述：${room.oral30s}`);
     const refs = room.articleRefs || [];
     if (refs[0] && articles[refs[0]]?.plain) {
-      lines.push(`人话：${articles[refs[0]].plain}`);
+      lines.push(`人话版：${articles[refs[0]].plain}`);
+    }
+    if (room.elements?.length) {
+      lines.push(`要件要点：${room.elements.slice(0, 5).join("，")}。`);
     }
     if (room.caseAnchor?.length) {
       lines.push(`案例锚：${room.caseAnchor.join("，")}。`);
     }
+    if (room.stations?.length) {
+      lines.push(
+        `站位：${room.stations.map((s) => s.label || s.id).join("，再到")}。`
+      );
+    }
+    if (room.peg != null) {
+      lines.push(`数字桩${room.peg}挂在这里。`);
+    }
+    if (room.drillPrompt) {
+      lines.push(`自问一句：${room.drillPrompt}`);
+    }
+    if (room.links?.length) {
+      lines.push(`可连房间：${room.links.slice(0, 4).join("、")}。`);
+    }
   }
-  lines.push(
-    meta.outro ||
-      `${floor.level === 0 ? "地下室" : `${floor.level}楼`}走廊结束。可以回到馆门，或换一层继续听。`
-  );
+
+  if (floorMeta.bridge) lines.push(floorMeta.bridge);
+  lines.push(floorMeta.outro);
   return lines;
 }
 

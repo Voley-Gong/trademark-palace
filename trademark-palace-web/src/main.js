@@ -860,8 +860,9 @@ function renderDrill() {
       <div class="progress-bar"><span style="width:${((step + 1) / questions.length) * 100}%"></span></div>
       <div class="card">
         <p class="muted" style="margin:0 0 12px">${drill.prompt}</p>
-        <div class="q-step">第 ${step + 1} 问 · ${q.floorHint}</div>
+        <div class="q-step">第 ${step + 1} 问 · ${q.floorHint || ""}</div>
         <h2>${q.label}？</h2>
+        ${q.hint ? `<p class="muted" style="margin-top:8px">提示：${q.hint}</p>` : ""}
         <p class="muted" style="margin-top:8px">点选本问最该先打开的房间（可多想，选一个最贴的）。</p>
         <div class="room-pick">
           ${options
@@ -887,6 +888,7 @@ function renderDrill() {
                 }
                 ${q.roomHints.join("、")}
                 ${!hintSet.has(picked) ? " · 已将该错房标记发霉" : ""}
+                ${q.teach ? `<p style="margin:10px 0 0">${q.teach}</p>` : ""}
                 ${feedbackLaw}
               </div>
               <div class="btn-row">
@@ -1026,6 +1028,8 @@ function renderListen() {
     const lines = buildFloorScript(floor, data.articles || {}, {
       intro: scripts.intro,
       outro: scripts.outro,
+      motto: scripts.motto,
+      byFloor: scripts.byFloor || {},
     });
     playScript(lines, {
       onProgress: ({ index, total, text }) => {
